@@ -6,6 +6,19 @@ spring:
     name: api-gateway
   cloud:
     gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]': # Áp dụng cho tất cả các endpoint API
+            allowedOrigins:
+              - "http://localhost:5173" # Cho phép Frontend của bạn truy cập
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS # Bắt buộc phải có OPTIONS cho preflight request
+            allowedHeaders: "*"
+            allowCredentials: true
       discovery:
         locator:
           # Bật khi ở Local (dùng Eureka), tắt khi lên K8s (dùng DNS)
