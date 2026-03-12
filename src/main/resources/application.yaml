@@ -8,55 +8,55 @@ spring:
     gateway:
       discovery:
         locator:
-          enabled: true
+          # Bật khi ở Local (dùng Eureka), tắt khi lên K8s (dùng DNS)
+          enabled: ${GATEWAY_DISCOVERY_ENABLED:true}
       routes:
         - id: product-service
-          uri: lb://product-service
+          # Local dùng lb:// (Eureka), K8s dùng http://product-service:8081
+          uri: ${PRODUCT_SERVICE_URI:lb://product-service}
           predicates:
             - Path=/api/products/**
 
-        # --- CẤU HÌNH CHO ORDER SERVICE ---
         - id: order-service
-          uri: lb://order-service
+          # Local dùng lb:// (Eureka), K8s dùng http://order-service:8082
+          uri: ${ORDER_SERVICE_URI:lb://order-service}
           predicates:
-            - Path=/api/orders/** # Nếu user gọi localhost:9000/api/order/... thì dẫn vào đây
+            - Path=/api/orders/**
 
         - id: notification-service
-          uri: lb://notification-service
+          uri: ${NOTIFICATION_SERVICE_URI:lb://notification-service}
           predicates:
             - Path=/api/notifications/**
 
-  # --- KIỂM TRA KỸ ĐOẠN NÀY ---
   security:
     oauth2:
       resourceserver:
         jwt:
-          # Đảm bảo dòng này còn tồn tại và đúng địa chỉ Keycloak của bạn
-          issuer-uri: http://localhost:8180/realms/ecommerce-realm
+          # URL của Keycloak. Ở bài trước realm của bạn là ecommerce-service,
+          # nếu bạn đổi thành ecommerce-realm thì hãy giữ nguyên.
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:31000/realms/ecommerce-realm}
 
 # Cấu hình Eureka
 eureka:
   client:
+    # Cho phép K8s tắt Eureka đi để không bị báo lỗi "Connection Refused 8761"
+    enabled: ${EUREKA_CLIENT_ENABLED:true}
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
 
+# --- CÁC CẤU HÌNH DƯỚI ĐÂY GIỮ NGUYÊN VÌ LÀ LOGIC ---
 resilience4j:
   circuitbreaker:
     instances:
       productService:
-        # Nếu 50% request bị lỗi -> Ngắt cầu dao (Open State)
         failure-rate-threshold: 50
-        # Thời gian chờ đợi trước khi thử mở lại cầu dao -> 5 giây
         wait-duration-in-open-state: 5000
-        # Số lượng request tối thiểu để bắt đầu tính toán tỷ lệ lỗi
         sliding-window-size: 5
   timelimiter:
     instances:
       productService:
-        # Thời gian timeout: Nếu gọi sang Product quá 3 giây mà chưa xong -> Coi là lỗi
         timeout-duration: 3s
 
-# Format log để hiện Trace ID và Span ID
 logging:
   pattern:
     level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
@@ -64,14 +64,15 @@ logging:
 management:
   tracing:
     sampling:
-      probability: 1.0 # 1.0 nghĩa là 100% request đều được gắn Trace ID
+      probability: 1.0
   zipkin:
     tracing:
-      endpoint: "http://localhost:9411/api/v2/spans" # Địa chỉ gửi báo cáo
+      # URL của Zipkin, cho phép ghi đè khi đưa lên K8s
+      endpoint: ${ZIPKIN_URL:http://localhost:9411/api/v2/spans}
   endpoints:
     web:
       exposure:
-        include: "health,info,prometheus" # Quan trọng nhất là chữ 'prometheus'
+        include: "health,info,prometheus"
     metrics:
       tags:
-        application: ${spring.application.name} # Gán tên service vào dữ liệu để dễ lọc
+        application: ${spring.application.name}
