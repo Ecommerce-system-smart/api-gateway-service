@@ -44,7 +44,7 @@ spring:
         - id: user-service
           uri: ${USER_SERVICE_URI:lb://user-service}
           predicates:
-            - Path=/api/user/**
+            - Path=/api/users/**
 
   security:
     oauth2:
