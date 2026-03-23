@@ -41,6 +41,11 @@ spring:
           predicates:
             - Path=/api/notifications/**
 
+        - id: user-service
+          uri: ${USER_SERVICE_URI:lb://user-service}
+          predicates:
+            - Path=/api/auth/**
+
   security:
     oauth2:
       resourceserver:
