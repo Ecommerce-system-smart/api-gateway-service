@@ -51,10 +51,10 @@ spring:
       resourceserver:
         jwt:
         # Dùng để so sánh với chữ 'iss' nằm bên trong Token
-          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:31000/realms/ecommerce-service}
+          issuer-uri: ${KEYCLOAK_SERVER_URL:http://localhost:8180}/realms/ecommerce-service
 
         # Dùng để Gateway đi lấy public key (chìa khóa) về giải mã Token
-          jwk-set-uri: ${KEYCLOAK_JWKS_URI:http://localhost:31000/realms/ecommerce-service/protocol/openid-connect/certs}
+          jwk-set-uri: ${KEYCLOAK_SERVER_URL:http://localhost:8180}/realms/ecommerce-service/protocol/openid-connect/certs
 
 # Cấu hình Eureka
 eureka:
