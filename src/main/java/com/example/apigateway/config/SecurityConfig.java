@@ -57,7 +57,7 @@ public class SecurityConfig {
                         // Cho phép gọi API đăng ký không cần Token
                         .pathMatchers("/api/users/**").permitAll()
                         // Cho phép gọi các API public nếu có (ví dụ: xem danh sách sản phẩm)
-                        // .pathMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+                        .pathMatchers(HttpMethod.GET, "/api/products/**").permitAll()
                         // Các request khác vẫn phải có Token hợp lệ
                         .anyExchange().authenticated()
                 )
