@@ -10,7 +10,7 @@ spring:
         corsConfigurations:
           '[/**]': # Áp dụng cho tất cả các endpoint API
             allowedOrigins:
-              - "http://localhost:5173" # Cho phép Frontend của bạn truy cập
+              - "https://plating-dial-lemon.ngrok-free.dev" # Cho phép Frontend của bạn truy cập
             allowedMethods:
               - GET
               - POST

@@ -33,7 +33,7 @@ public class SecurityConfig {
     @Bean
     public CorsWebFilter corsWebFilter() {
         CorsConfiguration corsConfig = new CorsConfiguration();
-        corsConfig.setAllowedOrigins(Arrays.asList("http://localhost:5173")); // Cho phép React
+        corsConfig.setAllowedOriginPatterns(Arrays.asList("*")); // Cho phép mọi origin (từ localhost, ngrok, vv)
         corsConfig.setMaxAge(3600L); // Cache preflight request trong 1 giờ
         corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         corsConfig.setAllowedHeaders(Arrays.asList("*"));
